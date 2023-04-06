@@ -5,7 +5,10 @@ export default class CreateUserDto{
     firstname: string;
 
     @IsString()
-    lastname: string;
+    email: string;
+
+    @IsString()
+    password: string;
 }
 
 export class UpdateUserDto {
@@ -13,5 +16,8 @@ export class UpdateUserDto {
     firstname: string;
 
     @IsString()
-    lastname: string;
+    email: string;
+
+    @IsString()
+    password: string;
   }

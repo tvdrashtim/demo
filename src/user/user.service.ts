@@ -14,7 +14,8 @@ export class UserService {
     create(createUserDto: CreateUserDto): Promise<Users> {
         const user = new Users();
         user.firstname = createUserDto.firstname;
-        user.lastname = createUserDto.lastname;
+        user.email = createUserDto.email;
+        user.password = createUserDto.password;
     
         return this.usersRepository.save(user);
       }
@@ -32,10 +33,19 @@ export class UserService {
         await this.usersRepository.delete(id);
     }
 
-    update(updateUserDto: UpdateUserDto): Promise<Users>{
-        const newUser = new Users;
-        newUser.firstname = updateUserDto.firstname;
-        newUser.lastname = updateUserDto.lastname;
-        return this.usersRepository.save(newUser);
-    }
+    // update(updateUserDto: UpdateUserDto): Promise<Users>{
+    //     const newUser = new Users;
+    //     newUser.firstname = updateUserDto.firstname;
+    //     newUser.lastname = updateUserDto.lastname;
+    //     return this.usersRepository.save(newUser);
+    // }
+
+    async update(id: number, attrs: Partial<Users>) {
+        const user = await this.findOne(id);
+        if (!user) {
+          throw new Error('user not found');
+        }
+        Object.assign(user, attrs);
+        return this.usersRepository.save(user);
+      }
 }
