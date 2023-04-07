@@ -1,19 +1,65 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, Session, UseInterceptors } from '@nestjs/common';
 import { Users } from './user.entity';
 import { UserService } from './user.service';
 import CreateUserDto, { UpdateUserDto } from './dto/create-user.dto';
 import { Serialize, SerializeInterceptor } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dto/user.dto';
+import { AuthService } from './auth.service';
+import { CurrentUser } from 'src/decorators/current-user-decorator';
 
 @Controller('users')
 @Serialize(UserDto)
 export class UserController {
-    constructor(private readonly usersService: UserService) { }
+    constructor(
+        private usersService: UserService,
+        private authService: AuthService
+    ) { }
+
+    // @Get('/whoami')
+    // currentUser(@Param('id') id:number , @Session() session: any) {
+    //     console.log("current user of id",id);
+    //     return this.usersService.findOne(id);
+    // }
+
+    //use custom decorator
+    @Get('/whoami')
+    currentUser(@CurrentUser() user: string){
+        return user;
+    }
+
+    @Post('/signout')
+    signOut(@Session() session: any) {
+        session.userId = null;
+    } 
+
+    // @Post('/signup')
+    // signup(@Body() body: CreateUserDto) {
+    //     return this.authService.signUp(body.email, body.password);
+    // }
+
+    @Post('/signup')
+    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.authService.signUp(body.email, body.password);
+        // session.userId = user.id;
+        return user;
+    }
+
+    // @Post('/signin')
+    // signin(@Body() body: CreateUserDto) {
+    //     return this.authService.signIn(body.email, body.password);
+    // }
+
+    @Post('/signin')
+    async signin(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.authService.signIn(body.email, body.password);
+        // session.userId = user.id;
+        return user;
+    }
 
     @Post()
     create(@Param('id') id:string,@Body() createUserDto: CreateUserDto): Promise<Users> {
         console.log("user inserted with id", createUserDto);
-        return this.usersService.create(createUserDto);
+        return this.usersService.create(createUserDto.email,createUserDto.password);
     }
 
     @Get()

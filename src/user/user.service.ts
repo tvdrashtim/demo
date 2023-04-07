@@ -11,12 +11,9 @@ export class UserService {
         private usersRepository : Repository<Users>,
     ){}
 
-    create(createUserDto: CreateUserDto): Promise<Users> {
-        const user = new Users();
-        user.firstname = createUserDto.firstname;
-        user.email = createUserDto.email;
-        user.password = createUserDto.password;
-    
+    create(email: string, password: string) {
+        const user = this.usersRepository.create({email, password});
+        
         return this.usersRepository.save(user);
       }
     
@@ -26,7 +23,14 @@ export class UserService {
     }
 
     findOne(id: number): Promise<Users>{
+        if(!id){
+            return null;
+        }
         return this.usersRepository.findOneBy({id});
+    }
+
+    find(email: string) {
+        return this.usersRepository.findBy({email});
     }
 
     async remove(id:string): Promise<void>{

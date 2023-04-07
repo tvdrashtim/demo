@@ -7,9 +7,6 @@ export class Users {
     id: number;
 
     @Column()
-    firstname: string;
-
-    @Column()
     email: string;
 
     // @Exclude()
