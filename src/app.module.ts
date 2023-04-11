@@ -7,9 +7,10 @@ import { EmployeeService } from './employee/employee.service';
 import { Authmiddleware } from './employee/middleware/auth';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
+import { GatewayModule } from './gateways/gateway.module';
 
 @Module({
-  imports: [EmployeeModule, UserModule, DatabaseModule],
+  imports: [EmployeeModule, UserModule, DatabaseModule, GatewayModule],
   controllers: [AppController, EmployeeController],
   providers: [AppService, EmployeeService],
 })
